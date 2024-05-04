@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+<script src="//d3js.org/d3.v5.min.js"></script>
+<script src="https://unpkg.com/@hpcc-js/wasm@0.3.11/dist/index.min.js"></script>
+<script src="https://unpkg.com/d3-graphviz@3.0.5/build/d3-graphviz.js"></script>
+<div id="graph" style="text-align: center;"></div>
+<script>
+
+var dotIndex = 0;
+var graphviz = d3.select("#graph").graphviz()
+    .transition(function () {
+        return d3.transition("main")
+            .ease(d3.easeLinear)
+            .delay(500)
+            .duration(2000);
+    })
+    .logEvents(true)
+    .on("initEnd", render);
+
+function render() {
+    var dotLines = dots[dotIndex];
+    var dot = dotLines.join('');
+    graphviz
+        .renderDot(dot)
+        .on("end", function () {
+            dotIndex = (dotIndex + 1) % dots.length;
+            render();
+        });
+}
+
+var dots = [
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+app1[label="@1"]
+
+l1[label="λ1"]
+app1:sw -> l1:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+
+dup2[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+n0 [height=0, width=0, shape=point]
+l1:sw -> n0:n
+n0:s -> dup2:s [arrowhead=dot, arrowsize=0.4]
+{rank=same; n0; dup2}
+
+app2[label="@2"]
+l1:se -> app2:n
+app2:se -> dup2:ne
+app2:sw -> dup2:nw [arrowtail=dot, dir=back, arrowsize=0.4]
+
+l2[label="λ2"]
+app1:se -> l2:n [arrowhead=dot, arrowsize=0.4]
+
+l2:sw -> app4:sw [arrowhead=dot, arrowsize=0.4]
+
+app3[label="@3"]
+l2:se -> app3:n
+
+l4[label="λ4"]
+app3:sw -> l4:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+
+dup1[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+n1 [height=0, width=0, shape=point]
+l4:sw -> n1:n
+n1:s -> dup1:s [arrowhead=dot, arrowsize=0.4]
+{rank=same; n1; dup1}
+
+app5[label="@5"]
+l4:se -> app5:n
+app5:se -> dup1:ne
+app5:sw -> dup1:nw [arrowtail=dot, dir=back, arrowsize=0.4]
+
+app4[label="@4"]
+{rank=same; l4; app4;}
+l4:e -> app4:w [style=invisible]
+app3:se -> app4:n
+
+l3[label="λ3"]
+app4:se -> l3:n
+n2 [height=0, width=0, shape=point]
+l3:se -> n2:e
+n2:w -> l3:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+dup2[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+
+app2[label="@2"]
+app2:se -> dup2:ne
+app2:sw -> dup2:nw [arrowtail=dot, dir=back, arrowsize=0.4]
+
+l2[label="λ2"]
+dup2:s -> l2:n [arrowtail=dot, arrowhead=dot, dir=both, arrowsize=0.4]
+
+l2:sw -> app4:sw [arrowhead=dot, arrowsize=0.4]
+
+app3[label="@3"]
+l2:se -> app3:n
+
+l4[label="λ4"]
+app3:sw -> l4:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+
+dup1[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+n1 [height=0, width=0, shape=point]
+l4:sw -> n1:n
+n1:s -> dup1:s [arrowhead=dot, arrowsize=0.4]
+{rank=same; n1; dup1}
+
+app5[label="@5"]
+l4:se -> app5:n
+app5:se -> dup1:ne
+app5:sw -> dup1:nw [arrowtail=dot, dir=back, arrowsize=0.4]
+
+app4[label="@4"]
+{rank=same; l4; app4;}
+l4:e -> app4:w [style=invisible]
+app3:se -> app4:n
+
+l3[label="λ3"]
+app4:se -> l3:n
+n2 [height=0, width=0, shape=point]
+l3:se -> n2:e
+n2:w -> l3:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+dup2[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+
+app2[label="@2"]
+app2:se -> dup2:ne
+app2:sw -> dup2:nw [arrowtail=dot, dir=back, arrowsize=0.4]
+
+l2[label="λ2"]
+dup2:s -> l2:n [arrowtail=dot, arrowhead=dot, dir=both, arrowsize=0.4]
+
+l2:sw -> app4:sw [arrowhead=dot, arrowsize=0.4]
+
+l2:se -> app5:n
+
+dup1[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+n1 [height=0, width=0, shape=point]
+dup1:s -> app4:n [arrowtail=dot, dir=both, arrowsize=0.4]
+{rank=same; n1; dup1}
+
+app5[label="@5"]
+app5:se -> dup1:ne
+app5:sw -> dup1:nw [arrowtail=dot, dir=back, arrowsize=0.4]
+
+app4[label="@4"]
+
+l3[label="λ3"]
+app4:se -> l3:n
+n2 [height=0, width=0, shape=point]
+l3:se -> n2:e
+n2:w -> l3:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+app2[label="@2"]
+l4[label="λ4"]
+
+l5[label="λ5"]
+
+app2:sw -> l4:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+app2:se -> l5:n
+
+dup2[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+l4:se -> dup2:nw
+l5:se -> dup2:ne
+dup2:s -> app5:n [arrowtail=dot, dir=both, arrowsize=0.4]
+
+dup1[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+n1 [height=0, width=0, shape=point]
+dup1:s -> app4:n [arrowtail=dot, dir=both, arrowsize=0.4]
+{rank=same; n1; dup1}
+
+app5[label="@5"]
+app5:se -> dup1:ne
+app5:sw -> dup1:nw [arrowtail=dot, dir=back, arrowsize=0.4]
+
+dup3[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=0]
+l4:sw -> dup3:sw
+l5:sw -> dup3:se
+app4[label="@4"]
+app4:sw -> dup3:n [arrowtail=dot, dir=both, arrowhead=dot, arrowsize=0.4]
+
+l3[label="λ3"]
+app4:se -> l3:n
+n2 [height=0, width=0, shape=point]
+l3:se -> n2:e
+n2:w -> l3:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+root [style=invis]
+{rank=source; root; }
+dup2[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+root -> dup2:nw
+n0 [style=invis]
+root -> n0:ne [style=invis]
+n0 -> dup2:nw [style=invis]
+
+l5[label="λ5"]
+l5:se -> dup2:ne
+dup2:s -> app5:n [arrowtail=dot, dir=both, arrowsize=0.4]
+
+dup1[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+n1 [height=0, width=0, shape=point]
+dup1:s -> app4:n [arrowtail=dot, dir=both, arrowsize=0.4]
+{rank=same; n1; dup1}
+
+app5[label="@5"]
+app5:se -> dup1:ne
+app5:sw -> dup1:nw [arrowtail=dot, dir=back, arrowsize=0.4]
+
+dup3[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=0]
+l5:n -> dup3:sw [arrowtail=dot, dir=both, arrowsize=0.4]
+
+l5:sw -> dup3:se
+app4[label="@4"]
+app4:sw -> dup3:n [arrowtail=dot, dir=both, arrowhead=dot, arrowsize=0.4]
+
+l3[label="λ3"]
+app4:se -> l3:n
+n2 [height=0, width=0, shape=point]
+l3:se -> n2:e
+n2:w -> l3:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+root [style=invis]
+{rank=source; root; }
+dup2[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+root -> dup2:nw
+
+l5[label="λ5"]
+l5:se -> dup2:ne
+dup2:s -> app5:n [arrowtail=dot, dir=both, arrowsize=0.4]
+
+dup1[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+n1 [height=0, width=0, shape=point]
+{rank=same; n1; dup1}
+
+app5[label="@5"]
+app5:se -> dup1:ne
+app5:sw -> dup1:nw [arrowtail=dot, dir=back, arrowsize=0.4]
+
+dup3[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=0]
+dup1:s -> dup3:n [arrowtail=dot, arrowhead=dot, dir=both, arrowsize=0.4]
+
+
+dup5[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+app6[label="@6"]
+app7[label="@7"]
+{rank=same app6:e -> app7:w [style=invis] }
+dup3:sw -> app6:n
+dup3:se -> app7:n
+app6:se -> dup5:nw
+app7:se -> dup5:ne
+
+l5:n -> app6:sw [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+l5:sw -> app7:sw [arrowhead=dot, arrowsize=0.4]
+
+l3[label="λ3"]
+dup5:s -> l3:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+n2 [height=0, width=0, shape=point]
+l3:se -> n2:e
+n2:w -> l3:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+root [style=invis]
+{rank=source; root; }
+dup2[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+root -> dup2:nw
+
+l5[label="λ5"]
+l5:se -> dup2:ne
+dup2:s -> app5:n [arrowtail=dot, dir=both, arrowsize=0.4]
+
+dup1[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+n1 [height=0, width=0, shape=point]
+{rank=same; n1; dup1}
+
+app5[label="@5"]
+app5:se -> dup1:ne
+app5:sw -> dup1:nw [arrowtail=dot, dir=back, arrowsize=0.4]
+
+dup3[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=0]
+dup1:s -> dup3:n [arrowtail=dot, arrowhead=dot, dir=both, arrowsize=0.4]
+
+
+app6[label="@6"]
+app7[label="@7"]
+{rank=same app6:e -> app7:w [style=invis] }
+
+app6[label="@6"]
+app7[label="@7"]
+{rank=same app6:e -> app7:w [style=invis] }
+dup3:sw -> app6:n
+dup3:se -> app7:n
+
+l5:n -> app6:sw [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+l5:sw -> app7:sw [arrowhead=dot, arrowsize=0.4]
+
+l6[label="λ6"]
+l7[label="λ7"]
+
+app6:se -> l6:n [arrowhead=dot, arrowsize=0.4]
+app7:se -> l7:n [arrowhead=dot, arrowsize=0.4]
+
+dup5[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+dup6[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=0]
+dup5:s -> dup6:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+l6:se -> dup5:nw
+l7:se -> dup5:ne
+l6:sw -> dup6:sw
+l7:sw -> dup6:se
+
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+root [style=invis]
+{rank=source; root; }
+dup2[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+root -> dup2:nw
+
+l5[label="λ5"]
+l5:se -> dup2:ne
+dup2:s -> app5:n [arrowtail=dot, dir=both, arrowsize=0.4]
+
+dup1[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+n1 [height=0, width=0, shape=point]
+{rank=same; n1; dup1}
+
+app5[label="@5"]
+app5:se -> dup1:ne
+app5:sw -> dup1:nw [arrowtail=dot, dir=back, arrowsize=0.4]
+
+dup3[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=0]
+dup1:s -> dup3:n [arrowtail=dot, arrowhead=dot, dir=both, arrowsize=0.4]
+
+app6[label="@6"]
+app7[label="@7"]
+{rank=same app6:e -> app7:w [style=invis] }
+dup3:sw -> app6:n
+dup3:se -> app7:n
+
+l5:n -> app6:sw [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+l5:sw -> app7:sw [arrowhead=dot, arrowsize=0.4]
+
+l6[label="λ6"]
+l7[label="λ7"]
+
+app6:se -> l6:n [arrowhead=dot, arrowsize=0.4]
+app7:se -> l7:n [arrowhead=dot, arrowsize=0.4]
+
+n2 [height=0, width=0, shape=point]
+l6:se -> n2:e
+n2:w -> l6:sw
+
+n3 [height=0, width=0, shape=point]
+l7:se -> n3:e
+n3:w -> l7:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+root [style=invis]
+{rank=source; root; }
+dup2[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+root -> dup2:nw
+
+l5[label="λ5"]
+l5:se -> dup2:ne
+dup2:s -> app5:n [arrowtail=dot, dir=both, arrowsize=0.4]
+
+
+app5[label="@5"]
+dup4[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=0]
+dup5[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=0]
+app5:sw -> dup4:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+app5:se -> dup5:n [arrowhead=dot, arrowsize=0.4]
+
+dup6[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+dup7[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+dup6:s -> app6:n [arrowtail=dot, dir=both, arrowsize=0.4]
+dup7:s -> app7:n [arrowtail=dot, dir=both, arrowsize=0.4]
+
+dup4:sw -> dup6:nw
+dup4:se -> dup7:nw
+dup5:sw -> dup6:ne
+dup5:se -> dup7:ne
+
+app6[label="@6"]
+app7[label="@7"]
+{rank=same app6:e -> app7:w [style=invis] }
+
+l5:n -> app6:sw [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+l5:sw -> app7:sw [arrowhead=dot, arrowsize=0.4]
+
+l6[label="λ6"]
+l7[label="λ7"]
+
+app6:se -> l6:n [arrowhead=dot, arrowsize=0.4]
+app7:se -> l7:n [arrowhead=dot, arrowsize=0.4]
+
+n2 [height=0, width=0, shape=point]
+l6:se -> n2:e
+n2:w -> l6:sw
+
+n3 [height=0, width=0, shape=point]
+l7:se -> n3:e
+n3:w -> l7:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+root [style=invis]
+{rank=source; root; }
+dup2[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+root -> dup2:nw
+
+dup2:s -> app5:n [arrowtail=dot, dir=both, arrowsize=0.4]
+
+app5[label="@5"]
+dup4[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=0]
+dup5[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=0]
+app5:sw -> dup4:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+app5:se -> dup5:n [arrowhead=dot, arrowsize=0.4]
+
+dup6[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+dup7[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+
+n1 [height=0, width=0, shape=point; style=invis]
+dup2:ne -> n1:n
+dup6:s -> n1:s [arrowtail=dot, dir=back; arrowsize=0.4]
+
+dup6:e -> dup7:w [style=invis]
+{rank=same; n1; dup6; dup7;}
+dup7:s -> app7:n [arrowtail=dot, dir=both, arrowsize=0.4]
+
+dup4:sw -> dup6:nw
+dup4:se -> dup7:nw
+dup5:sw -> dup6:ne
+dup5:se -> dup7:ne
+
+app7[label="@7"]
+
+l6[label="λ6"]
+l7[label="λ7"]
+
+app7:sw -> l6:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+app7:se -> l7:n [arrowhead=dot, arrowsize=0.4]
+
+n2 [height=0, width=0, shape=point]
+l6:se -> n2:e
+n2:w -> l6:sw
+
+n3 [height=0, width=0, shape=point]
+l7:se -> n3:e
+n3:w -> l7:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+root [style=invis]
+{rank=source; root; }
+dup2[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+root -> dup2:nw
+
+dup4[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=0]
+dup2:s -> dup4:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+
+app8[label="@8"]
+app8:sw -> dup6:nw [arrowtail=dot, dir=both, arrowsize=0.4]
+app8:se -> dup8:nw
+
+app9[label="@9"]
+app9:sw -> dup7:nw [arrowtail=dot, dir=both, arrowsize=0.4]
+app9:se -> dup8:ne
+
+dup8[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+dup8:s -> dup5:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+
+dup4:sw -> app8:n
+dup4:se -> app9:n
+
+dup6[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+dup7[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+
+n1 [height=0, width=0, shape=point; style=invis]
+dup2:ne -> n1:n
+dup6:s -> n1:s [arrowtail=dot, dir=back; arrowsize=0.4]
+
+dup6:e -> dup7:w [style=invis]
+{rank=same; n1; dup6; dup7;}
+dup7:s -> app7:n [arrowtail=dot, dir=both, arrowsize=0.4]
+
+dup5[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=0]
+dup5:sw -> dup6:ne
+dup5:se -> dup7:ne
+
+app7[label="@7"]
+
+l6[label="λ6"]
+l7[label="λ7"]
+
+app7:sw -> l6:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+app7:se -> l7:n [arrowhead=dot, arrowsize=0.4]
+
+n2 [height=0, width=0, shape=point]
+l6:se -> n2:e
+n2:w -> l6:sw
+
+n3 [height=0, width=0, shape=point]
+l7:se -> n3:e
+n3:w -> l7:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+root [style=invis]
+{rank=source; root; }
+dup2[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+root -> dup2:nw
+
+dup4[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=0]
+dup2:s -> dup4:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+
+app8[label="@8"]
+app8:sw -> dup6:nw [arrowtail=dot, dir=both, arrowsize=0.4]
+app8:se -> dup6:ne
+
+app9[label="@9"]
+app9:sw -> dup7:nw [arrowtail=dot, dir=both, arrowsize=0.4]
+app9:se -> dup7:ne
+
+dup4:sw -> app8:n
+dup4:se -> app9:n
+
+dup6[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+dup7[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+
+n1 [height=0, width=0, shape=point; style=invis]
+dup2:ne -> n1:n
+dup6:s -> n1:s [arrowtail=dot, dir=back; arrowsize=0.4]
+
+dup6:e -> dup7:w [style=invis]
+{rank=same; n1; dup6; dup7;}
+dup7:s -> app7:n [arrowtail=dot, dir=both, arrowsize=0.4]
+
+app7[label="@7"]
+
+l6[label="λ6"]
+l7[label="λ7"]
+
+app7:sw -> l6:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+app7:se -> l7:n [arrowhead=dot, arrowsize=0.4]
+
+n2 [height=0, width=0, shape=point]
+l6:se -> n2:e
+n2:w -> l6:sw
+
+n3 [height=0, width=0, shape=point]
+l7:se -> n3:e
+n3:w -> l7:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+root [style=invis]
+{rank=source; root; }
+root -> app8:n
+
+app8[label="@8"]
+app8:sw -> dup6:nw [arrowtail=dot, dir=both, arrowsize=0.4]
+app8:se -> dup6:ne
+
+app9[label="@9"]
+app9:sw -> dup7:nw [arrowtail=dot, dir=both, arrowsize=0.4]
+app9:se -> dup7:ne
+
+dup6[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+dup7[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+
+dup6:s -> app9:n [arrowtail=dot, dir=back; arrowsize=0.4]
+
+dup6:e -> dup7:w [style=invis]
+dup7:s -> app7:n [arrowtail=dot, dir=both, arrowsize=0.4]
+
+app7[label="@7"]
+
+l6[label="λ6"]
+l7[label="λ7"]
+
+app7:sw -> l6:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+app7:se -> l7:n [arrowhead=dot, arrowsize=0.4]
+
+n2 [height=0, width=0, shape=point]
+l6:se -> n2:e
+n2:w -> l6:sw
+
+n3 [height=0, width=0, shape=point]
+l7:se -> n3:e
+n3:w -> l7:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+root [style=invis]
+{rank=source; root; }
+root -> app8:n
+
+app8[label="@8"]
+app8:sw -> dup6:nw [arrowtail=dot, dir=both, arrowsize=0.4]
+app8:se -> dup6:ne
+
+app9[label="@9"]
+app9:sw -> dup7:nw [arrowtail=dot, dir=both, arrowsize=0.4]
+app9:se -> dup7:ne
+
+dup6[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+dup7[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+
+dup6:s -> app9:n [arrowtail=dot, dir=back; arrowsize=0.4]
+
+dup6:e -> dup7:w [style=invis]
+dup7:s -> l7:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+
+l7[label="λ7"]
+
+n3 [height=0, width=0, shape=point]
+l7:se -> n3:e
+n3:w -> l7:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+root [style=invis]
+{rank=source; root; }
+root -> app8:n
+
+app8[label="@8"]
+app8:sw -> dup6:nw [arrowtail=dot, dir=both, arrowsize=0.4]
+app8:se -> dup6:ne
+
+app9[label="@9"]
+app9:sw -> l8:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+app9:se -> l9:n [arrowhead=dot, arrowsize=0.4]
+
+dup6[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+
+dup6:s -> app9:n [arrowtail=dot, dir=back; arrowsize=0.4]
+
+l8[label="λ8"]
+
+n3 [height=0, width=0, shape=point]
+l8:se -> n3:e
+n3:w -> l8:sw
+
+l9[label="λ9"]
+
+n4 [height=0, width=0, shape=point]
+l9:se -> n4:e
+n4:w -> l9:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+root [style=invis]
+{rank=source; root; }
+root -> app8:n
+
+app8[label="@8"]
+app8:sw -> dup6:nw [arrowtail=dot, dir=both, arrowsize=0.4]
+app8:se -> dup6:ne
+
+dup6[label="", height=0.2, width=0.2, fixedsize=true, shape=triangle, orientation=180]
+
+dup6:s -> l9:n [arrowhead=dot, arrowtail=dot, dir=both; arrowsize=0.4]
+
+l9[label="λ9"]
+
+n4 [height=0, width=0, shape=point]
+l9:se -> n4:e
+n4:w -> l9:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+root [style=invis]
+{rank=source; root; }
+root -> app8:n
+
+app8[label="@8"]
+app8:sw -> l10:n [arrowhead=dot, arrowtail=dot, dir=both, arrowsize=0.4]
+app8:se -> l11:n [arrowhead=dot, arrowsize=0.4]
+
+l10[label="λ10"]
+
+n4 [height=0, width=0, shape=point]
+l10:se -> n4:e
+n4:w -> l10:sw
+
+l11[label="λ11"]
+
+n5 [height=0, width=0, shape=point]
+l11:se -> n5:e
+n5:w -> l11:sw
+}
+`],
+[`digraph sharing {
+node [shape=none, height=0, width=0]
+edge [arrowhead=none]
+
+root [style=invis]
+{rank=source; root; }
+root -> l11:n
+
+l11[label="λ11"]
+
+n5 [height=0, width=0, shape=point]
+l11:se -> n5:e
+n5:w -> l11:sw
+}`]
+    ];
+
+</script>
+
